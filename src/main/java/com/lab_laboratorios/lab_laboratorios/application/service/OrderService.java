@@ -15,7 +15,8 @@ public class OrderService implements IOrderService {
 
     @Autowired
     private OrderRepository orderRepository;
-
+    @Autowired
+    private PatientService patientService;
 
     @Override
     public ResultDto<Order> getOrderById(Long id) {
@@ -26,18 +27,30 @@ public class OrderService implements IOrderService {
 
     @Override
     public ResultDto<Order> createOrder(Order order) {
+        var patient = patientService.getPatientById(order.getPatient().getId());
+        if (!patient.isSuccess()) {
+            return ResultDto.fail("Patient doesn't exists");
+        }
         Order savedOrder = orderRepository.save(order);
         return ResultDto.ok(savedOrder);
     }
 
     @Override
     public ResultDto<Order> updateOrder(Long id, Order order) {
+        var patient = patientService.getPatientById(order.getPatient().getId());
+        if (!patient.isSuccess()) {
+            return ResultDto.fail("Patient doesn't exists");
+        }
         return orderRepository.findById(id)
                 .map(existingOrder -> {
                     existingOrder.setNotes(order.getNotes());
                     existingOrder.setOrderedAt(order.getOrderedAt());
-                    existingOrder.setPatient(order.getPatient());
                     existingOrder.setStatus(order.getStatus());
+
+                    if (order.getPatient() != null) {
+                        existingOrder.setPatient(order.getPatient());
+                    }
+
                     Order updatedOrder = orderRepository.save(existingOrder);
                     return ResultDto.ok(updatedOrder);
                 })

@@ -30,6 +30,10 @@ public class LaboratoryService implements ILaboratoryService {
 
     @Override
     public ResultDto<Laboratory> createLaboratory(Laboratory laboratory) {
+        if (laboratory == null) {
+            return ResultDto.fail("Laboratory data is null");
+        }
+
         Laboratory savedLaboratory = laboratoryRepository.save(laboratory);
         return ResultDto.ok(savedLaboratory);
     }
@@ -60,7 +64,7 @@ public class LaboratoryService implements ILaboratoryService {
 
     @Override
     public ResultDto<List<Laboratory>> getLaboratoriesBySpecialization(String specialization) {
-        List<Laboratory> laboratories = laboratoryRepository.findBySpecialization(specialization);
+        List<Laboratory> laboratories = laboratoryRepository.findAll().stream().filter(lab -> lab.getSpecialization().name().equalsIgnoreCase(specialization)).toList() ;
         return ResultDto.ok(laboratories);
     }
 

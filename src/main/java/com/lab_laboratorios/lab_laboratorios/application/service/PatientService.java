@@ -9,11 +9,14 @@ import com.lab_laboratorios.lab_laboratorios.application.interfaces.IPatientServ
 import com.lab_laboratorios.lab_laboratorios.domain.dataTransferObject.ResultDto;
 import com.lab_laboratorios.lab_laboratorios.infraestructure.model.Patient;
 import com.lab_laboratorios.lab_laboratorios.infraestructure.repository.PatientRepository;
+import com.lab_laboratorios.lab_laboratorios.infraestructure.service.UserService;
 
 @Service
 public class PatientService implements IPatientService {
     @Autowired
     private PatientRepository patientRepository;
+    @Autowired
+    private UserService userService;
 
     @Override
     public ResultDto<Patient> getPatientById(Long id) {
@@ -24,16 +27,28 @@ public class PatientService implements IPatientService {
 
     @Override
     public ResultDto<Patient> createPatient(Patient patient) {
+        var user = userService.getUserById(patient.getUserId());
+
+        if (!user.isSuccess()) {
+            return ResultDto.fail("User not found with id: " + patient.getUserId());
+        }
+
         Patient savedPatient = patientRepository.save(patient);
         return ResultDto.ok(savedPatient);
     }
 
     @Override
     public ResultDto<Patient> updatePatient(Long id, Patient patient) {
+
+        var user = userService.getUserById(patient.getUserId());
+
+        if (!user.isSuccess()) {
+            return ResultDto.fail("User not found with id: " + patient.getUserId());
+        }
+        
         return patientRepository.findById(id)
                 .map(existingPatient -> {
                     existingPatient.setFullName(patient.getFullName());
-                    existingPatient.setNationalId(patient.getNationalId());
                     existingPatient.setUserId(id);
                     existingPatient.setSex(patient.getSex());
                     existingPatient.setPhone(patient.getPhone());

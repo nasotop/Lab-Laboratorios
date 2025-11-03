@@ -4,6 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,6 +26,7 @@ public class PatientController {
     @Autowired
     private PatientService patientService;
 
+    @GetMapping("get-all")
     public ResultDto<List<PatientModel>> getAllPatients() {
         var patients = patientService.getAllPatients();
 
@@ -34,7 +41,9 @@ public class PatientController {
                         .toList());
     }
 
-    public ResultDto<PatientModel> getPatientById(Long id) {
+    @GetMapping("{id}")
+
+    public ResultDto<PatientModel> getPatientById(@PathVariable Long id) {
         var patient = patientService.getPatientById(id);
 
         if (!patient.isSuccess()) {
@@ -44,7 +53,9 @@ public class PatientController {
         return ResultDto.ok(PatientMapper.toModel(patient.getData()));
     }
 
-    public ResultDto<PatientModel> createPatient(PatientModel patientModel) {
+    @PostMapping("create")
+
+    public ResultDto<PatientModel> createPatient(@RequestBody PatientModel patientModel) {
         var patientEntity = PatientMapper.toEntity(patientModel);
         var createdPatient = patientService.createPatient(patientEntity);
 
@@ -55,7 +66,9 @@ public class PatientController {
         return ResultDto.ok(PatientMapper.toModel(createdPatient.getData()));
     }
 
-    public ResultDto<PatientModel> updatePatient(Long id, PatientModel patientModel) {
+    @PostMapping("update/{id}")
+
+    public ResultDto<PatientModel> updatePatient(@PathVariable Long id, @RequestBody PatientModel patientModel) {
         var patientEntity = PatientMapper.toEntity(patientModel);
         var updatedPatient = patientService.updatePatient(id, patientEntity);
 
@@ -66,10 +79,10 @@ public class PatientController {
         return ResultDto.ok(PatientMapper.toModel(updatedPatient.getData()));
     }
 
-    public ResultDto<Void> deletePatient(Long id) {
+    @DeleteMapping("delete/{id}")
+    public ResultDto<Void> deletePatient(@PathVariable Long id) {
 
         return patientService.deletePatient(id);
     }
-
 
 }

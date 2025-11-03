@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,7 +12,6 @@ import com.lab_laboratorios.lab_laboratorios.application.service.ParametersServi
 import com.lab_laboratorios.lab_laboratorios.domain.dataTransferObject.ResultDto;
 import com.lab_laboratorios.lab_laboratorios.presentation.mapper.ParametersMapper;
 import com.lab_laboratorios.lab_laboratorios.presentation.model.ParameterModel;
-
 @RestController
 @RequestMapping("api/laboratory/parameter")
 @CrossOrigin(origins = "*")
@@ -19,6 +19,7 @@ public class ParametersController {
     @Autowired
     private ParametersService parametersService;
 
+    @GetMapping("/specializations")
     public ResultDto<List<ParameterModel>> getSpecializations() {
         var specializations = parametersService.getAllSpecializations();
 
@@ -33,6 +34,7 @@ public class ParametersController {
                         .toList());
     }
 
+    @GetMapping("/test-status")
     public ResultDto<List<ParameterModel>> getTestStatus() {
         var testStatuses = parametersService.getAllTestStatus();
 
@@ -47,6 +49,7 @@ public class ParametersController {
                         .toList());
     }
 
+    @GetMapping("/priorities")
     public ResultDto<List<ParameterModel>> getPriorities() {
         var priorities = parametersService.getAllPriorities();
 
@@ -61,6 +64,7 @@ public class ParametersController {
                         .toList());
     }
 
+    @GetMapping("/order-status")
     public ResultDto<List<ParameterModel>> getOrderStatus() {
         var orderStatuses = parametersService.getAllOrderStatus();
 

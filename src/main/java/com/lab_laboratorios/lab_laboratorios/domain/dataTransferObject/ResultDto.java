@@ -3,6 +3,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AccessLevel;
@@ -26,6 +28,13 @@ public class ResultDto<T> {
         return ResultDto.<T>builder()
                 .success(false)
                 .message(message)
+                .build();
+    }
+    
+    public static <T> ResultDto<T> fail(List<String> messages) {
+        return ResultDto.<T>builder()
+                .success(false)
+                .message(String.join("; ", messages))
                 .build();
     }
     public String getErrorMessage() {

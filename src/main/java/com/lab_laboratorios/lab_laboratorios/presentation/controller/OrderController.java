@@ -4,6 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,6 +17,7 @@ import com.lab_laboratorios.lab_laboratorios.application.service.OrderService;
 import com.lab_laboratorios.lab_laboratorios.domain.dataTransferObject.ResultDto;
 import com.lab_laboratorios.lab_laboratorios.presentation.mapper.OrderMapper;
 import com.lab_laboratorios.lab_laboratorios.presentation.model.OrderModel;
+import com.lab_laboratorios.lab_laboratorios.presentation.validation.OrderValidation;
 
 @RestController
 @RequestMapping("api/laboratory/order")
@@ -18,7 +25,10 @@ import com.lab_laboratorios.lab_laboratorios.presentation.model.OrderModel;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private OrderValidation orderValidation;
 
+    @GetMapping("/all")
     public ResultDto<List<OrderModel>> getAllOrders() {
         var orders = orderService.getAllOrders();
 
@@ -33,7 +43,8 @@ public class OrderController {
                         .toList());
     }
 
-    public ResultDto<OrderModel> getOrderById(Long id) {
+    @GetMapping("/{id}")
+    public ResultDto<OrderModel> getOrderById(@PathVariable Long id) {
         var order = orderService.getOrderById(id);
 
         if (!order.isSuccess()) {
@@ -42,7 +53,13 @@ public class OrderController {
 
         return ResultDto.ok(OrderMapper.toModel(order.getData()));
     }
-    public ResultDto<OrderModel> createOrder(OrderModel orderModel) {
+
+    @PostMapping("/create")
+    public ResultDto<OrderModel> createOrder(@RequestBody OrderModel orderModel) {
+        var validation = orderValidation.ValidateOrderModel(orderModel);
+        if (!validation.isSuccess()) {
+            return ResultDto.fail(validation.getErrorMessage());
+        }
         var orderEntity = OrderMapper.toEntity(orderModel);
         var createdOrder = orderService.createOrder(orderEntity);
 
@@ -52,7 +69,14 @@ public class OrderController {
 
         return ResultDto.ok(OrderMapper.toModel(createdOrder.getData()));
     }
-    public ResultDto<OrderModel> updateOrder(Long id, OrderModel orderModel) {
+
+    @PutMapping("/update/{id}")
+    public ResultDto<OrderModel> updateOrder(@PathVariable Long id, @RequestBody OrderModel orderModel) {
+        var validation = orderValidation.ValidateOrderModel(orderModel);
+        if (!validation.isSuccess()) {
+            return ResultDto.fail(validation.getErrorMessage());
+        }
+
         var orderEntity = OrderMapper.toEntity(orderModel);
         var updatedOrder = orderService.updateOrder(id, orderEntity);
 
@@ -62,7 +86,9 @@ public class OrderController {
 
         return ResultDto.ok(OrderMapper.toModel(updatedOrder.getData()));
     }
-    public ResultDto<Void> deleteOrder(Long id) {
+
+    @DeleteMapping("/delete/{id}")
+    public ResultDto<Void> deleteOrder(@PathVariable Long id) {
         var deletedOrder = orderService.deleteOrder(id);
 
         if (!deletedOrder.isSuccess()) {
@@ -72,7 +98,8 @@ public class OrderController {
         return ResultDto.ok(null);
     }
 
-    public ResultDto<List<OrderModel>> getOrdersByPatientId(Long patientId) {
+    @GetMapping("/by-patient/{patientId}")
+    public ResultDto<List<OrderModel>> getOrdersByPatientId(@PathVariable Long patientId) {
         var orders = orderService.getOrdersByPatientId(patientId);
 
         if (!orders.isSuccess()) {
@@ -85,6 +112,5 @@ public class OrderController {
                         .map(order -> OrderMapper.toModel(order))
                         .toList());
     }
-
 
 }

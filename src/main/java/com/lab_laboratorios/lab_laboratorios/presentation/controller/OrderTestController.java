@@ -4,6 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,7 +17,7 @@ import com.lab_laboratorios.lab_laboratorios.application.service.OrderTestServic
 import com.lab_laboratorios.lab_laboratorios.domain.dataTransferObject.ResultDto;
 import com.lab_laboratorios.lab_laboratorios.presentation.mapper.OrderTestMapper;
 import com.lab_laboratorios.lab_laboratorios.presentation.model.OrderTestModel;
-
+import com.lab_laboratorios.lab_laboratorios.presentation.validation.OrderTestValidation;
 @RestController
 @RequestMapping("api/laboratory/order-test")
 @CrossOrigin(origins = "*")
@@ -19,7 +25,10 @@ public class OrderTestController {
 
     @Autowired
     private OrderTestService orderTestService;
+    @Autowired
+    private OrderTestValidation orderTestValidation;
 
+    @GetMapping("/all")
     public ResultDto<List<OrderTestModel>> getAllOrderTests() {
         var orderTests = orderTestService.getAllOrderTests();
 
@@ -33,7 +42,9 @@ public class OrderTestController {
                         .map(orderTest -> OrderTestMapper.toModel(orderTest))
                         .toList());
     }
-    public ResultDto<OrderTestModel> getOrderTestById(Long id) {
+
+    @GetMapping("/{id}")
+    public ResultDto<OrderTestModel> getOrderTestById(@PathVariable Long id) {
         var orderTest = orderTestService.getOrderTestById(id);
 
         if (!orderTest.isSuccess()) {
@@ -42,7 +53,14 @@ public class OrderTestController {
 
         return ResultDto.ok(OrderTestMapper.toModel(orderTest.getData()));
     }
-    public ResultDto<OrderTestModel> createOrderTest(OrderTestModel orderTestModel) {
+
+    @PostMapping("/create")
+    public ResultDto<OrderTestModel> createOrderTest(@RequestBody OrderTestModel orderTestModel) {
+        var validation = orderTestValidation.ValidateOrderTestModel(orderTestModel);
+        if (!validation.isSuccess()) {
+            return ResultDto.fail(validation.getErrorMessage());
+        }
+
         var orderTestEntity = OrderTestMapper.toEntity(orderTestModel);
         var createdOrderTest = orderTestService.createOrderTest(orderTestEntity);
 
@@ -52,7 +70,14 @@ public class OrderTestController {
 
         return ResultDto.ok(OrderTestMapper.toModel(createdOrderTest.getData()));
     }
-    public ResultDto<OrderTestModel> updateOrderTest(Long id, OrderTestModel orderTestModel) {
+
+    @PutMapping("/update/{id}")
+    public ResultDto<OrderTestModel> updateOrderTest(@PathVariable Long id, @RequestBody OrderTestModel orderTestModel) {
+        var validation = orderTestValidation.ValidateOrderTestModel(orderTestModel);
+        if (!validation.isSuccess()) {
+            return ResultDto.fail(validation.getErrorMessage());
+        }
+
         var orderTestEntity = OrderTestMapper.toEntity(orderTestModel);
         var updatedOrderTest = orderTestService.updateOrderTest(id, orderTestEntity);
 
@@ -62,7 +87,9 @@ public class OrderTestController {
 
         return ResultDto.ok(OrderTestMapper.toModel(updatedOrderTest.getData()));
     }
-    public ResultDto<List<OrderTestModel>> getOrderTestsByOrderId(Long orderId) {
+
+    @GetMapping("/by-order/{orderId}")
+    public ResultDto<List<OrderTestModel>> getOrderTestsByOrderId(@PathVariable Long orderId) {
         var orderTests = orderTestService.getOrderTestsByOrderId(orderId);
 
         if (!orderTests.isSuccess()) {
@@ -75,9 +102,9 @@ public class OrderTestController {
                         .map(orderTest -> OrderTestMapper.toModel(orderTest))
                         .toList());
     }
-    public ResultDto<Void> deleteOrderTest(Long id) {
+
+    @DeleteMapping("/delete/{id}")
+    public ResultDto<Void> deleteOrderTest(@PathVariable Long id) {
         return orderTestService.deleteOrderTest(id);
     }
-
-
 }

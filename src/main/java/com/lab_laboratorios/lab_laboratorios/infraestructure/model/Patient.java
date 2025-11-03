@@ -29,9 +29,6 @@ public class Patient {
 
     private Long userId;
 
-    @Column(unique = true)
-    private String nationalId;
-
     @Column(nullable = false)
     private String fullName;
 

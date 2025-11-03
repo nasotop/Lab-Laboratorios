@@ -4,6 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,7 +17,6 @@ import com.lab_laboratorios.lab_laboratorios.application.service.TestTypeService
 import com.lab_laboratorios.lab_laboratorios.domain.dataTransferObject.ResultDto;
 import com.lab_laboratorios.lab_laboratorios.presentation.mapper.TestTypeMapper;
 import com.lab_laboratorios.lab_laboratorios.presentation.model.TestTypeModel;
-
 @RestController
 @RequestMapping("api/laboratory/test-type")
 @CrossOrigin(origins = "*")
@@ -19,6 +24,7 @@ public class TestTypeController {
     @Autowired
     private TestTypeService testTypeService;
 
+    @GetMapping("/all")
     public ResultDto<List<TestTypeModel>> getAllTestTypes() {
         var testTypes = testTypeService.getAllTestTypes();
 
@@ -33,7 +39,8 @@ public class TestTypeController {
                         .toList());
     }
 
-    public ResultDto<TestTypeModel> getTestTypeById(Long id) {
+    @GetMapping("/{id}")
+    public ResultDto<TestTypeModel> getTestTypeById(@PathVariable Long id) {
         var testType = testTypeService.getTestTypeById(id);
 
         if (!testType.isSuccess()) {
@@ -43,7 +50,8 @@ public class TestTypeController {
         return ResultDto.ok(TestTypeMapper.toModel(testType.getData()));
     }
 
-    public ResultDto<TestTypeModel> createTestType(TestTypeModel testTypeModel) {
+    @PostMapping("/create")
+    public ResultDto<TestTypeModel> createTestType(@RequestBody TestTypeModel testTypeModel) {
         var testTypeEntity = TestTypeMapper.toEntity(testTypeModel);
         var createdTestType = testTypeService.createTestType(testTypeEntity);
 
@@ -54,7 +62,8 @@ public class TestTypeController {
         return ResultDto.ok(TestTypeMapper.toModel(createdTestType.getData()));
     }
 
-    public ResultDto<TestTypeModel> updateTestType(Long id, TestTypeModel testTypeModel) {
+    @PutMapping("/update/{id}")
+    public ResultDto<TestTypeModel> updateTestType(@PathVariable Long id, @RequestBody TestTypeModel testTypeModel) {
         var testTypeEntity = TestTypeMapper.toEntity(testTypeModel);
         var updatedTestType = testTypeService.updateTestType(id, testTypeEntity);
 
@@ -65,7 +74,8 @@ public class TestTypeController {
         return ResultDto.ok(TestTypeMapper.toModel(updatedTestType.getData()));
     }
 
-    public ResultDto<Void> deleteTestType(Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResultDto<Void> deleteTestType(@PathVariable Long id) {
         var deletedTestType = testTypeService.deleteTestType(id);
 
         if (!deletedTestType.isSuccess()) {
@@ -75,7 +85,8 @@ public class TestTypeController {
         return ResultDto.ok(null);
     }
 
-    public ResultDto<List<TestTypeModel>> getTestTypesBySpecialization(String specialization) {
+    @GetMapping("/by-specialization/{specialization}")
+    public ResultDto<List<TestTypeModel>> getTestTypesBySpecialization(@PathVariable String specialization) {
         var testTypes = testTypeService.getTestTypesBySpecialization(specialization);
 
         if (!testTypes.isSuccess()) {
@@ -88,5 +99,4 @@ public class TestTypeController {
                         .map(testType -> TestTypeMapper.toModel(testType))
                         .toList());
     }
-
 }
