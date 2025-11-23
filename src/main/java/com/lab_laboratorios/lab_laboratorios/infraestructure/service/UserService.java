@@ -14,20 +14,19 @@ import com.lab_laboratorios.lab_laboratorios.infraestructure.dataTransferObject.
 @Service
 public class UserService {
     private final ApiClient api;
-    private final userFactory routes; 
+    private final userFactory routes;
 
     public UserService(userFactory routes, ApiClient api) {
         this.api = api;
         this.routes = routes;
     }
 
-     public ResultDto<UserDto> getUserById(Long id) {
+    public ResultDto<UserDto> getUserById(Long id) {
         try {
-            Map<String, Object> params = Map.of("id", id);
             return api.invokeBlocking(
                     HttpMethod.GET,
-                    routes.getUser,
-                    params,
+                    routes.getUser.replace("{id}", id.toString()),
+                    null,
                     null,
                     null,
                     null,

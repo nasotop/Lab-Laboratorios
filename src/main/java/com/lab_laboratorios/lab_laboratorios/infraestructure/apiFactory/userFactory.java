@@ -11,7 +11,7 @@ public class userFactory {
 
     public final String getUser;
     public userFactory(ApiConfiguration apiConfig) {
-        this.baseUrl =  apiConfig.getApiGateway() + "/api/user/";
-        this.getUser =  baseUrl + "{id}";
+        this.baseUrl =  apiConfig.getApiUser() + "/api/user/";
+        this.getUser =  baseUrl + "get-user-by-id/{id}";
     }
 }

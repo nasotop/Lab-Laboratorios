@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderTestModel {
     private Long id;
-    private OrderModel order;
-    private TestTypeModel testType;
-    private LaboratoryModel laboratory;
+    private Long orderId;
+    private Long testTypeId;
+    private Long laboratoryId;
     private String priority;
     private String status;
     private LocalDateTime scheduledStart;

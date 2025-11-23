@@ -5,13 +5,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ApiConfiguration {
-    @Value("${enviroment.api-gateway}")
-    private String apiGateway;
+    @Value("${enviroment.api-user}")
+    private String apiUser;
 
 
     
-    public String getApiGateway() {
-        return apiGateway;
+    public String getApiUser() {
+        return apiUser;
     }
 
 }

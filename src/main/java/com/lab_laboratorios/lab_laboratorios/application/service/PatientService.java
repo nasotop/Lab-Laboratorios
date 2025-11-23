@@ -49,7 +49,7 @@ public class PatientService implements IPatientService {
         return patientRepository.findById(id)
                 .map(existingPatient -> {
                     existingPatient.setFullName(patient.getFullName());
-                    existingPatient.setUserId(id);
+                    existingPatient.setUserId(patient.getUserId());
                     existingPatient.setSex(patient.getSex());
                     existingPatient.setPhone(patient.getPhone());
                     existingPatient.setEmail(patient.getEmail());
